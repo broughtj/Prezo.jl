@@ -9,8 +9,9 @@ struct Binomial
     steps::Int
 end
 
-function price(option::EuropeanOption, engine::Binomial, spot, rate, vol)
-    strike, expiry = option.strike, option.expiry
+function price(option::EuropeanOption, engine::Binomial, data::MarketData)
+    (; strike, expiry) = option
+    (; spot, rate, vol, div) = data
     steps = engine.steps
 
     dt = expiry / steps
@@ -40,8 +41,9 @@ end
 
 struct BlackScholes end
 
-function price(option::EuropeanCall, engine::BlackScholes, spot, rate, vol)
-    strike, expiry = option.strike, option.expiry
+function price(option::EuropeanCall, engine::BlackScholes, data::MarketData)
+    (; strike, expiry) = option
+    (; spot, rate, vol, div) = data
 
     d1 = (log(spot / strike) + (rate + 0.5 * vol^2) * expiry) / (vol * sqrt(expiry))
     d2 = d1 - vol * sqrt(expiry)
@@ -51,8 +53,9 @@ function price(option::EuropeanCall, engine::BlackScholes, spot, rate, vol)
     return price 
 end
 
-function price(option::EuropeanPut, engine::BlackScholes, spot, rate, vol)
-    strike, expiry = option.strike, option.expiry
+function price(option::EuropeanPut, engine::BlackScholes, data::MarketData)
+    (; strike, expiry) = option
+    (; spot, rate, vol) = data
 
     d1 = (log(spot / strike) + (rate + 0.5 * vol^2) * expiry) / (vol * sqrt(expiry))
     d2 = d1 - vol * sqrt(expiry)
@@ -69,7 +72,7 @@ struct MonteCarlo
 end
 
 function asset_paths(engine::MonteCarlo, spot, rate, vol, expiry)
-    steps, reps = engine.steps, engine.reps
+    (; steps, reps) = engine
 
     dt = expiry / steps
     nudt = (rate - 0.5 * vol^2) * dt
@@ -104,9 +107,10 @@ function plot_paths(paths, num)
     title!("First 10 Simulated Paths")
 end
 
-function price(option::EuropeanOption, engine::MonteCarlo, spot, rate, vol)
-    strike, expiry = option.strike, option.expiry
-    steps, reps = engine.steps, engine.reps
+function price(option::EuropeanOption, engine::MonteCarlo, data::MarketData)
+    (; strike, expiry) = option
+    (; spot, rate, vol) = data
+    (; steps, reps) = engine
 
     paths = asset_paths(engine, spot, rate, vol, expiry)
     payoffs = payoff.(option, paths[:, end])
