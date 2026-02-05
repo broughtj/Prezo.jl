@@ -347,4 +347,54 @@ Random.seed!(42)
             @test premium_high_r > premium_low_r
         end
     end
+
+    # Phase 1: Greeks Tests
+    @testset "Greeks Module" begin
+        include("test_greeks.jl")
+    end
+
+    # Phase 1: Implied Volatility Tests
+    @testset "Implied Volatility Module" begin
+        include("test_implied_vol.jl")
+    end
+
+    # Phase 1: Property-based tests (mathematical invariants)
+    @testset "Property-Based Tests" begin
+        include("test_properties.jl")
+    end
+
+    # Phase 2: Volatility (GARCH family)
+    @testset "Volatility Module" begin
+        include("test_volatility.jl")
+    end
+
+    # Phase 3: State estimation (Kalman, EKF, EnKF, Particle Filter)
+    @testset "Filters Module" begin
+        include("test_filters.jl")
+    end
+
+    # Phase 4: Inference (MLE, calibration, ABC)
+    @testset "Inference Module" begin
+        include("test_inference.jl")
+    end
+
+    # Phase 5: Advanced Hedging (OHMC, delta hedging)
+    @testset "Hedging Module" begin
+        include("test_hedging.jl")
+    end
+
+    # Phase 5 Extension: CVaR-aware OHMC (Lagrangian CVaR inside OHMC)
+    @testset "CVaR-OHMC Module" begin
+        include("test_cvar_ohmc.jl")
+    end
+
+    # GPU acceleration (CUDA; tests run only when GPU available)
+    @testset "GPU Module" begin
+        include("test_gpu.jl")
+    end
+
+    # Phase 6: Risk Management (VaR, CVaR, stress testing, scenario analysis, Kelly)
+    @testset "Risk Module" begin
+        include("test_risk.jl")
+    end
 end
